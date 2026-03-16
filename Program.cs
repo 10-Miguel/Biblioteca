@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Threading;
 namespace Biblioteca {
 
-    // --- MODELOS DE DATOS ---
+    // --- MODELOS PARA RECIBIR Y ENVIAR DATOS ---  
     public class Libro {
         public int Id { get; set; }
         public string Titulo { get; set; } = "";
