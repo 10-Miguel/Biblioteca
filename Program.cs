@@ -121,22 +121,39 @@ class Program
             EjecutarAccion($"Ejecutando operación de usuarios: {op}");
     }
 
-        // --- SECCIÓN 3: PRÉSTAMOS ---
-    static void MenuPrestamos()
-    {
-        Console.Clear();
-        Console.WriteLine(">> GESTIÓN DE PRÉSTAMOS");
-        Console.WriteLine("3.1 Crear préstamo\n3.2 Listar préstamos\n3.3 Ver detalle\n3.4 Registrar devolución\n3.5 Eliminar préstamo\n0. Volver");
+// --- SECCIÓN 3: PRÉSTAMOS ---
+        static void MenuPrestamos()
+        {
+            Console.Clear();
+            Console.WriteLine(">> GESTIÓN DE PRÉSTAMOS");
+            Console.WriteLine("1. Crear préstamo\n2. Registrar devolución\n0. Volver");
+            string op = Console.ReadLine() ?? "";
+
+            if (op == "1") {
+                Console.Write("ID Libro: "); int idL = int.Parse(Console.ReadLine() ?? "0");
+                Console.Write("ID Usuario: "); int idU = int.Parse(Console.ReadLine() ?? "0");
+
+                var libro = libros.FirstOrDefault(l => l.Id == idL && !l.Prestado);
+                var usuario = usuarios.FirstOrDefault(u => u.Id == idU);
+
+                if (libro != null && usuario != null) {
+                    libro.Prestado = true;
+                    prestamos.Add(new Prestamo { LibroId = idL, UsuarioId = idU, Fecha = DateTime.Now });
+                    EjecutarAccion("Préstamo exitoso.");
+                } else {
+                    EjecutarAccion("Error: Libro no disponible o usuario inexistente.");
+                }
+            } else if (op == "2") {
+                Console.Write("ID Libro a devolver: "); int idL = int.Parse(Console.ReadLine() ?? "0");
+                var libro = libros.FirstOrDefault(l => l.Id == idL && l.Prestado);
+                if (libro != null) {
+                    libro.Prestado = false;
+                    prestamos.RemoveAll(p => p.LibroId == idL);
+                    EjecutarAccion("Devolución procesada.");
+                }
+            }
+        }
         
-        string op = Console.ReadLine() ?? "";
-        if (op == "3.1")
-            EjecutarAccion("Validando disponibilidad de libro y estado de usuario...");
-        else if (op == "3.4")
-            EjecutarAccion("Procesando devolución y actualizando stock...");
-        else if (op != "0")
-            EjecutarAccion($"Operación de préstamo: {op}");
-    }
-    
  // --- SECCIÓN 4: BÚSQUEDAS Y REPORTES ---
     static void MenuReportes()
     {
