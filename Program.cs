@@ -172,32 +172,54 @@ class Program
     }
 
  // --- SECCIÓN 5: PERSISTENCIA ---
-    static void MenuDatos()
-    {
-        Console.Clear();
-        Console.WriteLine(">> DATOS");
-        Console.WriteLine("5.1 Guardar\n5.2 Cargar\n5.3 Reiniciar sistema\n0. Volver");
-        
-        string op = Console.ReadLine() ?? "";
-        if (op == "5.3") {
-            Console.Write("¿Confirmar reinicio total? (S/N): ");
-            if (Console.ReadLine()?.ToUpper() == "S") EjecutarAccion("¡Sistema reseteado!");
-        } else if (op != "0") EjecutarAccion("Sincronizando con persistencia de datos...");
-    }
+        static void MenuDatos()
+        {
+            Console.Clear();
+            Console.WriteLine("1. Guardar\n2. Cargar\n0. Volver");
+            string op = Console.ReadLine() ?? "";
+            if (op == "1") GuardarDatos();
+            else if (op == "2") CargarDatos();
+        }
 
+        static void GuardarDatos()
+        {
+            var data = new { Libros = libros, Usuarios = usuarios, Prestamos = prestamos };
+            string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(ArchivoDatos, json);
+            EjecutarAccion("Datos guardados en " + ArchivoDatos);
+        }
+
+        static void CargarDatos()
+        {
+            if (File.Exists(ArchivoDatos)) {
+                string json = File.ReadAllText(ArchivoDatos);
+                var data = JsonSerializer.Deserialize<DataWrapper>(json);
+                if (data != null) {
+                    libros = data.Libros;
+                    usuarios = data.Usuarios;
+                    prestamos = data.Prestamos;
+                }
+                EjecutarAccion("Datos cargados correctamente.");
+            }
+        }
  // --- HELPERS ---
-    static void EjecutarAccion(string mensaje)
-    {
-        Console.WriteLine($"\n[PROCESO]: {mensaje}");
-        Console.WriteLine("Presione una tecla para continuar...");
-        Console.ReadKey();
-    }
+  class DataWrapper {
+            public List<Libro> Libros { get; set; } = new List<Libro>();
+            public List<Usuario> Usuarios { get; set; } = new List<Usuario>();
+            public List<Prestamo> Prestamos { get; set; } = new List<Prestamo>();
+        }
 
-    static void MensajeError()
-    {
-        Console.WriteLine("\n[!] Opción inválida.");
-        Thread.Sleep(800);
-    }
+        static void EjecutarAccion(string mensaje)
+        {
+            Console.WriteLine($"\n[INFO]: {mensaje}");
+            Console.WriteLine("Presione una tecla para continuar...");
+            Console.ReadKey();
+        }
 
-}
+        static void MensajeError()
+        {
+            Console.WriteLine("\n[!] Opción inválida.");
+            Thread.Sleep(800);
+        }
+    }
 }
