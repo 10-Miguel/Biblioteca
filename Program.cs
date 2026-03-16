@@ -160,17 +160,18 @@ class Program
             }
         }
         
- // --- SECCIÓN 4: BÚSQUEDAS Y REPORTES ---
-    static void MenuReportes()
-    {
-        Console.Clear();
-        Console.WriteLine(">> BÚSQUEDAS Y REPORTES");
-        Console.WriteLine("4.1 Buscar libro (Título/Autor/ISBN/Cat)\n4.2 Buscar usuario\n4.3 Reportes generales\n0. Volver");
-        
-        string op = Console.ReadLine() ?? "";
-        if (op != "0") EjecutarAccion("Generando reporte/búsqueda solicitada...");
-    }
-
+ // --- SECCIÓN 4: REPORTES ---
+        static void MenuReportes()
+        {
+            Console.Clear();
+            Console.WriteLine(">> BÚSQUEDA");
+            Console.Write("Ingrese título o autor a buscar: ");
+            string b = Console.ReadLine()?.ToLower() ?? "";
+            var resultados = libros.Where(l => l.Titulo.ToLower().Contains(b) || l.Autor.ToLower().Contains(b)).ToList();
+            
+            resultados.ForEach(l => Console.WriteLine($"{l.Titulo} - {l.Autor} ({(l.Prestado ? "Ocupado":"Libre")})"));
+            EjecutarAccion($"{resultados.Count} encontrados.");
+        }
  // --- SECCIÓN 5: PERSISTENCIA ---
         static void MenuDatos()
         {
