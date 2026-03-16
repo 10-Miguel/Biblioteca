@@ -1,9 +1,45 @@
-﻿namespace Biblioteca;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using System.Threading;
+namespace Biblioteca {
 
+    // --- MODELOS DE DATOS ---
+    public class Libro {
+        public int Id { get; set; }
+        public string Titulo { get; set; } = "";
+        public string Autor { get; set; } = "";
+        public string ISBN { get; set; } = "";
+        public bool Prestado { get; set; } = false;
+}
+
+public class Usuario {
+        public int Id { get; set; }
+        public string Nombre { get; set; } = "";
+        public string Correo { get; set; } = "";
+        public bool Activo { get; set; } = true;
+    }
+
+    public class Prestamo {
+        public int LibroId { get; set; }
+        public int UsuarioId { get; set; }
+        public DateTime Fecha { get; set; }
+    }
 class Program
-{
+{ 
+    // Bases de datos en memoria
+        static List<Libro> libros = new List<Libro>();
+        static List<Usuario> usuarios = new List<Usuario>();
+        static List<Prestamo> prestamos = new List<Prestamo>();
+        
+        const string ArchivoDatos = "biblioteca_datos.json";
+
+        
     static void Main()
     {
+        CargarDatos();
         MenuPrincipal();
     }
     static void MenuPrincipal()
@@ -46,14 +82,30 @@ class Program
         Console.WriteLine("1.1 Registrar libro\n1.2 Listar libros\n1.3 Ver detalle (ID/ISBN)\n1.4 Actualizar libro\n1.5 Eliminar libro\n0. Volver");
         
         string op = Console.ReadLine() ?? "";
-        if (op == "1.2") 
-            EjecutarAccion("Submenú: Listar (Todos / Disponibles / Prestados)");
-        else if (op == "1.4") 
-            EjecutarAccion("Submenú: Editar (Título / Autor / Año / Categoría)");
-        else if (op != "0")
-            EjecutarAccion($"Ejecutando operación de libros: {op}");
-    }
-
+      switch (op)
+            {
+                case "1":
+                    Libro nuevo = new Libro { Id = libros.Count + 1 };
+                    Console.Write("Título: "); nuevo.Titulo = Console.ReadLine() ?? "";
+                    Console.Write("Autor: "); nuevo.Autor = Console.ReadLine() ?? "";
+                    Console.Write("ISBN: "); nuevo.ISBN = Console.ReadLine() ?? "";
+                    libros.Add(nuevo);
+                    EjecutarAccion("Libro registrado.");
+                    break;
+                case "2":
+                    Console.WriteLine("\nID | Título | Autor | Estado");
+                    libros.ForEach(l => Console.WriteLine($"{l.Id} | {l.Titulo} | {l.Autor} | {(l.Prestado ? "Prestado" : "Disponible")}"));
+                    EjecutarAccion("Fin de lista.");
+                    break;
+                case "3":
+                    Console.Write("ID del libro a eliminar: ");
+                    if(int.TryParse(Console.ReadLine(), out int id)) {
+                        libros.RemoveAll(l => l.Id == id);
+                        EjecutarAccion("Libro eliminado si existía.");
+                    }
+                    break;
+            }
+        }
   // --- SECCIÓN 2: USUARIOS ---
     static void MenuUsuarios()
     {
@@ -66,6 +118,67 @@ class Program
             EjecutarAccion("Submenú: Editar (Nombre / Contacto / Estado Activo)");
         else if (op != "0")
             EjecutarAccion($"Ejecutando operación de usuarios: {op}");
+    }
+
+// --- SECCIÓN 2: USUARIOS ---
+        static void MenuUsuarios()
+        {
+            Console.Clear();
+            Console.WriteLine(">> GESTIÓN DE USUARIOS");
+            Console.WriteLine("1. Registrar usuario\n2. Listar usuarios\n0. Volver");
+            string op = Console.ReadLine() ?? "";
+
+            if (op == "1") {
+                Usuario u = new Usuario { Id = usuarios.Count + 1 };
+                Console.Write("Nombre: "); u.Nombre = Console.ReadLine() ?? "";
+                Console.Write("Correo: "); u.Correo = Console.ReadLine() ?? "";
+                usuarios.Add(u);
+                EjecutarAccion("Usuario registrado.");
+            } else if (op == "2") {
+                usuarios.ForEach(u => Console.WriteLine($"{u.Id} | {u.Nombre} | {u.Correo}"));
+                EjecutarAccion("Fin de lista.");
+            }
+        }
+
+        // --- SECCIÓN 3: PRÉSTAMOS ---
+    static void MenuPrestamos()
+    {
+        Console.Clear();
+        Console.WriteLine(">> GESTIÓN DE PRÉSTAMOS");
+        Console.WriteLine("3.1 Crear préstamo\n3.2 Listar préstamos\n3.3 Ver detalle\n3.4 Registrar devolución\n3.5 Eliminar préstamo\n0. Volver");
+        
+        string op = Console.ReadLine() ?? "";
+        if (op == "3.1")
+            EjecutarAccion("Validando disponibilidad de libro y estado de usuario...");
+        else if (op == "3.4")
+            EjecutarAccion("Procesando devolución y actualizando stock...");
+        else if (op != "0")
+            EjecutarAccion($"Operación de préstamo: {op}");
+    }
+    
+ // --- SECCIÓN 4: BÚSQUEDAS Y REPORTES ---
+    static void MenuReportes()
+    {
+        Console.Clear();
+        Console.WriteLine(">> BÚSQUEDAS Y REPORTES");
+        Console.WriteLine("4.1 Buscar libro (Título/Autor/ISBN/Cat)\n4.2 Buscar usuario\n4.3 Reportes generales\n0. Volver");
+        
+        string op = Console.ReadLine() ?? "";
+        if (op != "0") EjecutarAccion("Generando reporte/búsqueda solicitada...");
+    }
+
+ // --- SECCIÓN 5: PERSISTENCIA ---
+    static void MenuDatos()
+    {
+        Console.Clear();
+        Console.WriteLine(">> DATOS");
+        Console.WriteLine("5.1 Guardar\n5.2 Cargar\n5.3 Reiniciar sistema\n0. Volver");
+        
+        string op = Console.ReadLine() ?? "";
+        if (op == "5.3") {
+            Console.Write("¿Confirmar reinicio total? (S/N): ");
+            if (Console.ReadLine()?.ToUpper() == "S") EjecutarAccion("¡Sistema reseteado!");
+        } else if (op != "0") EjecutarAccion("Sincronizando con persistencia de datos...");
     }
 
  // --- HELPERS ---
@@ -82,4 +195,5 @@ class Program
         Thread.Sleep(800);
     }
 
+}
 }
