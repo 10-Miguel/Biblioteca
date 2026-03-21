@@ -1,5 +1,6 @@
 ﻿namespace Biblioteca;
-
+using System;
+using Biblioteca.Models;
 class Program
 {
     static void Main()
@@ -36,63 +37,6 @@ class Program
                 default: MensajeError(); break;
             }
         }
-    }
-
-// --- SECCIÓN 1: LIBROS ---
-    static void MenuLibros()
-    {
-        Console.Clear();
-        Console.WriteLine(">> GESTIÓN DE LIBROS");
-        Console.WriteLine("1.1 Registrar libro\n1.2 Listar libros\n1.3 Ver detalle (ID/ISBN)\n1.4 Actualizar libro\n1.5 Eliminar libro\n0. Volver");
-        
-        string op = Console.ReadLine() ?? "";
-        if (op == "1.2") 
-            EjecutarAccion("Submenú: Listar (Todos / Disponibles / Prestados)");
-        else if (op == "1.4") 
-            EjecutarAccion("Submenú: Editar (Título / Autor / Año / Categoría)");
-        else if (op != "0")
-            EjecutarAccion($"Ejecutando operación de libros: {op}");
-    }
-
-  // --- SECCIÓN 2: USUARIOS ---
-    static void MenuUsuarios()
-    {
-        Console.Clear();
-        Console.WriteLine(">> GESTIÓN DE USUARIOS");
-        Console.WriteLine("2.1 Registrar usuario\n2.2 Listar usuarios\n2.3 Ver detalle\n2.4 Actualizar\n2.5 Eliminar\n0. Volver");
-        
-        string op = Console.ReadLine() ?? "";
-        if (op == "2.4")
-            EjecutarAccion("Submenú: Editar (Nombre / Contacto / Estado Activo)");
-        else if (op != "0")
-            EjecutarAccion($"Ejecutando operación de usuarios: {op}");
-    }
-
-        // --- SECCIÓN 3: PRÉSTAMOS ---
-    static void MenuPrestamos()
-    {
-        Console.Clear();
-        Console.WriteLine(">> GESTIÓN DE PRÉSTAMOS");
-        Console.WriteLine("3.1 Crear préstamo\n3.2 Listar préstamos\n3.3 Ver detalle\n3.4 Registrar devolución\n3.5 Eliminar préstamo\n0. Volver");
-        
-        string op = Console.ReadLine() ?? "";
-        if (op == "3.1")
-            EjecutarAccion("Validando disponibilidad de libro y estado de usuario...");
-        else if (op == "3.4")
-            EjecutarAccion("Procesando devolución y actualizando stock...");
-        else if (op != "0")
-            EjecutarAccion($"Operación de préstamo: {op}");
-    }
-    
- // --- SECCIÓN 4: BÚSQUEDAS Y REPORTES ---
-    static void MenuReportes()
-    {
-        Console.Clear();
-        Console.WriteLine(">> BÚSQUEDAS Y REPORTES");
-        Console.WriteLine("4.1 Buscar libro (Título/Autor/ISBN/Cat)\n4.2 Buscar usuario\n4.3 Reportes generales\n0. Volver");
-        
-        string op = Console.ReadLine() ?? "";
-        if (op != "0") EjecutarAccion("Generando reporte/búsqueda solicitada...");
     }
 
  // --- SECCIÓN 5: PERSISTENCIA ---
