@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,6 +28,11 @@ public class Usuario {
         public int UsuarioId { get; set; }
         public DateTime Fecha { get; set; }
     }
+=======
+﻿namespace Biblioteca;
+using System;
+using Biblioteca.Models;
+>>>>>>> main
 class Program
 { 
     // Bases de datos en memoria
@@ -74,6 +80,7 @@ class Program
         }
     }
 
+<<<<<<< HEAD
 // --- SECCIÓN 1: LIBROS ---
     static void MenuLibros()
     {
@@ -172,6 +179,8 @@ class Program
             resultados.ForEach(l => Console.WriteLine($"{l.Titulo} - {l.Autor} ({(l.Prestado ? "Ocupado":"Libre")})"));
             EjecutarAccion($"{resultados.Count} encontrados.");
         }
+=======
+>>>>>>> main
  // --- SECCIÓN 5: PERSISTENCIA ---
         static void MenuDatos()
         {
