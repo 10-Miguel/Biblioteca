@@ -61,6 +61,45 @@ class Program
         }
     }
 
+static void MenuLibros()
+    {
+        bool volver = false;
+        while (!volver)
+        {
+            Console.Clear();
+            Console.WriteLine(">> LIBROS");
+            Console.WriteLine("1. Agregar\n2. Listar\n3. Buscar ISBN\n0. Volver");
+            Console.Write("\nOpcion: ");
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    Console.Write("ISBN: "); string isbn = Console.ReadLine() ?? "";
+                    Console.Write("Titulo: "); string titulo = Console.ReadLine() ?? "";
+                    Console.Write("Autor: "); string autor = Console.ReadLine() ?? "";
+                    libros.Add(new Libro(isbn, titulo, autor));
+                    Ok("Libro agregado.");
+                    break;
+                case "2":
+                    Console.Clear();
+                    if (libros.Count == 0) { Ok("No hay libros."); break; }
+                    foreach (var l in libros)
+                    {
+                        Console.WriteLine(l.DetalleCompleto());
+                        Console.WriteLine($"  Disponible: {(l.Disponible ? "SI" : "NO")}\n");
+                    }
+                    Ok("");
+                    break;
+                case "3":
+                    Console.Write("ISBN: "); string buscar = Console.ReadLine() ?? "";
+                    var lib = libros.Find(l => l.Isbn == buscar);
+                    Ok(lib != null ? lib.DetalleCompleto() : "No encontrado.");
+                    break;
+                case "0": volver = true; break;
+                default: Error(); break;
+            }
+        }
+    }
+
 
 
     static void Error()
