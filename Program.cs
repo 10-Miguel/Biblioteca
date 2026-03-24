@@ -100,7 +100,39 @@ static void MenuLibros()
         }
     }
 
-
+static void MenuUsuarios()
+    {
+        bool volver = false;
+        while (!volver)
+        {
+            Console.Clear();
+            Console.WriteLine(">> USUARIOS");
+            Console.WriteLine("1. Agregar\n2. Listar\n0. Volver");
+            Console.Write("\nOpcion: ");
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    int id = usuarios.Count + 1;
+                    Console.Write("Nombre: "); string nombre = Console.ReadLine() ?? "";
+                    Console.Write("Email: "); string email = Console.ReadLine() ?? "";
+                    usuarios.Add(new Usuario(id, nombre, email));
+                    Ok($"Usuario creado con ID {id}.");
+                    break;
+                case "2":
+                    Console.Clear();
+                    if (usuarios.Count == 0) { Ok("No hay usuarios."); break; }
+                    foreach (var u in usuarios)
+                    {
+                        Console.WriteLine(u.DetalleCompleto());
+                        Console.WriteLine($"  Activo: {(u.Activo ? "SI" : "NO")}\n");
+                    }
+                    Ok("");
+                    break;
+                case "0": volver = true; break;
+                default: Error(); break;
+            }
+        }
+    }
 
     static void Error()
     {
