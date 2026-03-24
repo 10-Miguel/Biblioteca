@@ -134,6 +134,54 @@ static void MenuUsuarios()
         }
     }
 
+static void MenuPrestamos()
+    {
+        bool volver = false;
+        while (!volver)
+        {
+            Console.Clear();
+            Console.WriteLine(">> PRESTAMOS");
+            Console.WriteLine("1. Crear\n2. Devolver\n3. Listar\n0. Volver");
+            Console.Write("\nOpcion: ");
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    Console.Write("ISBN del libro: "); string isbn = Console.ReadLine() ?? "";
+                    var libro = libros.Find(l => l.Isbn == isbn && l.Disponible);
+                    if (libro == null) { Ok("Libro no disponible."); break; }
+                    Console.Write("ID usuario: ");
+                    if (!int.TryParse(Console.ReadLine(), out int uid)) { Ok("ID invalido."); break; }
+                    var usuario = usuarios.Find(u => u.Id == uid && u.Activo);
+                    if (usuario == null) { Ok("Usuario no encontrado."); break; }
+                    libro.Disponible = false;
+                    prestamos.Add(new Prestamo(libro, usuario, DateTime.Now));
+                    Ok($"Prestamo creado.");
+                    break;
+                case "2":
+                    Console.Write("ISBN a devolver: "); string isbnDev = Console.ReadLine() ?? "";
+                    var p = prestamos.Find(x => x.LibroPrestado.Isbn == isbnDev && x.Estado == EstadoPrestamo.Activo);
+                    if (p == null) { Ok("Prestamo activo no encontrado."); break; }
+                    p.FechaDevolucion = DateTime.Now;
+                    p.Estado = p.EstaVencido() ? EstadoPrestamo.Vencido : EstadoPrestamo.Devuelto;
+                    p.LibroPrestado.Disponible = true;
+                    Ok($"Devolucion registrada. Estado: {p.Estado}");
+                    break;
+                case "3":
+                    Console.Clear();
+                    if (prestamos.Count == 0) { Ok("No hay prestamos."); break; }
+                    foreach (var pr in prestamos)
+                    {
+                        Console.WriteLine(pr.DetalleCompleto());
+                        Console.WriteLine($"  Vencido: {(pr.EstaVencido() ? "SI" : "NO")} | Dias: {pr.DiasTranscurridos()}\n");
+                    }
+                    Ok("");
+                    break;
+                case "0": volver = true; break;
+                default: Error(); break;
+            }
+        }
+    }
+    
     static void Error()
     {
         Console.WriteLine("\n[!] Opción inválida.");
