@@ -183,8 +183,22 @@ static void MenuPrestamos()
         }
     }
 
+ // --- SECCIÓN 5: PERSISTENCIA ---
+    static void MenuDatos()
+    {
+        Console.Clear();
+        Console.WriteLine(">> DATOS");
+        Console.WriteLine("5.1 Guardar\n5.2 Cargar\n5.3 Reiniciar sistema\n0. Volver");
+        
+        string op = Console.ReadLine() ?? "";
+        if (op == "5.3") {
+            Console.Write("¿Confirmar reinicio total? (S/N): ");
+            if (Console.ReadLine()?.ToUpper() == "S") EjecutarAccion("¡Sistema reseteado!");
+        } else if (op != "0") EjecutarAccion("Sincronizando con persistencia de datos...");
+    }
 
- static void MenuReportes()
+ // --- HELPERS ---
+    static void EjecutarAccion(string mensaje)
     {
         bool volver = false;
         while (!volver)
