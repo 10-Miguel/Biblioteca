@@ -9,7 +9,7 @@ class Program
 {
     static LibroService libroService = new();
     static UsuarioService usuarioService = new();
-    static PrestamoService prestamoService = new();
+    static PrestamoService prestamosService = new();
 
     static void Main()
     {
@@ -31,7 +31,7 @@ class Program
     libroService.Agregar(libro2);
     usuarioService.Agregar(usuario1);
     usuarioService.Agregar(usuario2);
-    prestamoService.RegistrarPrestamo(prestamo1);
+    prestamosService.RegistrarPrestamo(prestamo1);
 }
 
     static void MenuPrincipal()
@@ -163,134 +163,144 @@ static void MenuUsuarios()
 }
 
 static void MenuPrestamos()
-    {
-        bool volver = false;
-        while (!volver)
-        {
-            Console.Clear();
-            Console.WriteLine(">> PRESTAMOS");
-            Console.WriteLine("1. Crear\n2. Devolver\n3. Listar\n0. Volver");
-            Console.Write("\nOpcion: ");
-            switch (Console.ReadLine())
-            {
-                case "1":
-                    Console.Write("ISBN del libro: "); string isbn = Console.ReadLine() ?? "";
-                    var libro = libros.Find(l => l.Isbn == isbn && l.Disponible);
-                    if (libro == null) { Ok("Libro no disponible."); break; }
-                    Console.Write("ID usuario: ");
-                    if (!int.TryParse(Console.ReadLine(), out int uid)) { Ok("ID invalido."); break; }
-                    var usuario = usuarios.Find(u => u.Id == uid && u.Activo);
-                    if (usuario == null) { Ok("Usuario no encontrado."); break; }
-                    libro.Disponible = false;
-                    prestamos.Add(new Prestamo(libro, usuario, DateTime.Now));
-                    Ok($"Prestamo creado.");
-                    break;
-                case "2":
-                    Console.Write("ISBN a devolver: "); string isbnDev = Console.ReadLine() ?? "";
-                    var p = prestamos.Find(x => x.LibroPrestado.Isbn == isbnDev && x.Estado == EstadoPrestamo.Activo);
-                    if (p == null) { Ok("Prestamo activo no encontrado."); break; }
-                    p.FechaDevolucion = DateTime.Now;
-                    p.Estado = p.EstaVencido() ? EstadoPrestamo.Vencido : EstadoPrestamo.Devuelto;
-                    p.LibroPrestado.Disponible = true;
-                    Ok($"Devolucion registrada. Estado: {p.Estado}");
-                    break;
-                case "3":
-                    Console.Clear();
-                    if (prestamos.Count == 0) { Ok("No hay prestamos."); break; }
-                    foreach (var pr in prestamos)
-                    {
-                        Console.WriteLine(pr.DetalleCompleto());
-                        Console.WriteLine($"  Vencido: {(pr.EstaVencido() ? "SI" : "NO")} | Dias: {pr.DiasTranscurridos()}\n");
-                    }
-                    Ok("");
-                    break;
-                case "0": volver = true; break;
-                default: Error(); break;
-            }
-        }
-    }
-
-
- static void MenuReportes()
-    {
-        bool volver = false;
-        while (!volver)
-        {
-            Console.Clear();
-            Console.WriteLine(">> REPORTES");
-            Console.WriteLine("1. Prestamos activos\n2. Prestamos vencidos\n3. Libros disponibles\n4. Objetos de prueba\n0. Volver");
-            Console.Write("\nOpcion: ");
-            switch (Console.ReadLine())
-            {
-                case "1":
-                    var activos = prestamos.FindAll(x => x.Estado == EstadoPrestamo.Activo);
-                    Console.Clear();
-                    if (activos.Count == 0) { Ok("No hay prestamos activos."); break; }
-                    activos.ForEach(x => Console.WriteLine(x.ResumenCorto()));
-                    Ok("");
-                    break;
-                case "2":
-                    var vencidos = prestamos.FindAll(x => x.EstaVencido());
-                    Console.Clear();
-                    if (vencidos.Count == 0) { Ok("No hay prestamos vencidos."); break; }
-                    vencidos.ForEach(x => Console.WriteLine(x.DetalleCompleto()));
-                    Ok("");
-                    break;
-                case "3":
-                    var disp = libros.FindAll(l => l.Disponible);
-                    Console.Clear();
-                    if (disp.Count == 0) { Ok("No hay libros disponibles."); break; }
-                    disp.ForEach(l => Console.WriteLine(l.ResumenCorto()));
-                    Ok("");
-                    break;
-                case "4":
-                    Console.Clear();
-                    Console.WriteLine("=== OBJETOS DE PRUEBA ===\n");
-                    Console.WriteLine("-- LIBROS --");
-                    foreach (var l in libros)
-                    {
-                        Console.WriteLine(l.DetalleCompleto());
-                        Console.WriteLine($"  Disponible: {(l.Disponible ? "SI" : "NO")}\n");
-                    }
-                    Console.WriteLine("-- USUARIOS --");
-                    foreach (var u in usuarios)
-                    {
-                        Console.WriteLine(u.DetalleCompleto());
-                        Console.WriteLine($"  Activo: {(u.Activo ? "SI" : "NO")}\n");
-                    }
-                    Console.WriteLine("-- PRESTAMOS --");
-                    foreach (var pr in prestamos)
-                    {
-                        Console.WriteLine(pr.DetalleCompleto());
-                        Console.WriteLine($"  Estado: {pr.Estado} | Vencido: {(pr.EstaVencido() ? "SI" : "NO")} | Dias: {pr.DiasTranscurridos()}\n");
-                    }
-                    Ok("");
-                    break;
-                case "0": volver = true; break;
-                default: Error(); break;
-            }
-        }
-    }
-
-    static void MenuDatos()
+{
+    bool volver = false;
+    while (!volver)
     {
         Console.Clear();
-        Console.WriteLine(">> DATOS");
-        Console.WriteLine("1. Guardar\n2. Cargar\n3. Reiniciar\n0. Volver");
+        Console.WriteLine(">> PRESTAMOS");
+        Console.WriteLine("1. Crear\n2. Devolver\n3. Listar\n0. Volver");
         Console.Write("\nOpcion: ");
-        string op = Console.ReadLine() ?? "";
-        if (op == "3")
+        switch (Console.ReadLine())
         {
-            Console.Write("Confirmar reinicio? (S/N): ");
-            if (Console.ReadLine()?.ToUpper() == "S")
-            {
-                libros.Clear(); usuarios.Clear(); prestamos.Clear();
-                Ok("Sistema reseteado.");
-            }
-        }
-        else if (op != "0") Ok("Sincronizando datos...");
-    }
+            case "1":
+                Console.Write("ISBN del libro: "); string isbn = Console.ReadLine() ?? "";
+                // Buscamos a través del servicio de libros
+                var libro = libroService.BuscarPorIsbn(isbn);
+                if (libro == null || !libro.Disponible) { Ok("Libro no disponible."); break; }
 
+                Console.Write("ID usuario: ");
+                if (!int.TryParse(Console.ReadLine(), out int uid)) { Ok("ID invalido."); break; }
+                
+                // Buscamos a través del servicio de usuarios
+                var usuario = usuarioService.BuscarPorId(uid);
+                if (usuario == null || !usuario.Activo) { Ok("Usuario no encontrado o inactivo."); break; }
+
+                libro.Disponible = false;
+                prestamosService.RegistrarPrestamo(new Prestamo(libro, usuario, DateTime.Now));
+                Ok("Prestamo registrado exitosamente.");
+                break;
+            case "2":
+                Console.Write("ISBN a devolver: "); string isbnDev = Console.ReadLine() ?? "";
+                var p = prestamosService.ObtenerTodos().Find(x => x.LibroPrestado.Isbn == isbnDev && x.Estado == EstadoPrestamo.Activo);
+                
+                if (p == null) { Ok("Prestamo activo no encontrado."); break; }
+                
+                p.FechaDevolucion = DateTime.Now;
+                p.Estado = p.EstaVencido() ? EstadoPrestamo.Vencido : EstadoPrestamo.Devuelto;
+                p.LibroPrestado.Disponible = true;
+                Ok($"Devolucion registrada. Estado: {p.Estado}");
+                break;
+            case "3":
+                Console.Clear();
+                var listaP = prestamosService.ObtenerTodos();
+                if (listaP.Count == 0) { Ok("No hay prestamos."); break; }
+                foreach (var pr in listaP)
+                {
+                    Console.WriteLine(pr.DetalleCompleto());
+                }
+                // KPIs Obligatorios
+                Console.WriteLine($"\nTotal Préstamos: {prestamosService.TotalPrestamos()}");
+                Console.WriteLine($"Promedio días de préstamo: {prestamosService.PromedioDiasPrestamo():F2} días");
+                Ok("");
+                break;
+            case "0": volver = true; break;
+            default: Error(); break;
+        }
+    }
+}
+
+
+static void MenuReportes()
+{
+    bool volver = false;
+    while (!volver)
+    {
+        Console.Clear();
+        Console.WriteLine(">> REPORTES Y ESTADÍSTICAS");
+        Console.WriteLine("1. Ver Préstamos Activos\n2. Ver Libros Disponibles\n3. Comparación Array vs List \n0. Volver");
+        Console.Write("\nOpcion: ");
+        switch (Console.ReadLine())
+        {
+            case "1":
+                var activos = prestamosService.BuscarPorEstado(EstadoPrestamo.Activo);
+                Console.Clear();
+                if (activos.Count == 0) { Ok("No hay préstamos activos."); break; }
+                activos.ForEach(x => Console.WriteLine(x.ResumenCorto()));
+                Ok("");
+                break;
+            case "2":
+                var disponibles = libroService.ObtenerTodos().FindAll(l => l.Disponible);
+                Console.Clear();
+                disponibles.ForEach(l => Console.WriteLine(l.ResumenCorto()));
+                Ok("");
+                break;
+            case "3":
+                ExplicarDiferenciaArrayLista(); // El método que te pasé antes
+                break;
+            case "0": volver = true; break;
+        }
+    }
+}
+
+static void MenuDatos()
+{
+    Console.Clear();
+    Console.WriteLine(">> DATOS");
+    Console.WriteLine("1. Guardar\n2. Cargar\n3. Reiniciar\n0. Volver");
+    Console.Write("\nOpcion: ");
+    string op = Console.ReadLine() ?? "";
+
+    if (op == "3")
+    {
+        Console.Write("Confirmar reinicio? (S/N): ");
+        if (Console.ReadLine()?.ToUpper() == "S")
+        {
+            // CAMBIO: En lugar de .Clear() en listas que ya no existen, 
+            // reiniciamos los servicios.
+            libroService = new LibroService();
+            usuarioService = new UsuarioService();
+            prestamosService = new PrestamoService();
+            
+            Ok("Sistema reseteado (Servicios reiniciados).");
+        }
+    }
+    else if (op != "0") 
+    {
+        Ok("Sincronizando datos...");
+    }
+}
+static void ExplicarDiferenciaArrayLista()
+{
+    Console.Clear();
+    Console.WriteLine("=== COMPARACIÓN: ARRAY VS LISTA ===");
+    
+    // Ejemplo de Array (Tamaño fijo)
+    string[] miArray = new string[2];
+    miArray[0] = "Libro A";
+    miArray[1] = "Libro B";
+
+    // Ejemplo de Lista (Dinámica)
+    List<string> miLista = new List<string>();
+    miLista.Add("Libro 1");
+    miLista.Add("Libro 2");
+    miLista.Add("Libro 3");
+
+    Console.WriteLine("\n1. ARRAYS: Tienen un tamaño estático (fijo).");
+    Console.WriteLine("2. LISTS: Son dinámicas, crecen según necesites.");
+    Console.WriteLine($"\nResultado: El Array tiene {miArray.Length} espacios. La Lista tiene {miLista.Count} elementos.");
+    Ok("");
+}
     static void Ok(string msg)
     {
         if (!string.IsNullOrEmpty(msg)) Console.WriteLine($"\n[OK]: {msg}");
