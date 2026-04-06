@@ -7,9 +7,9 @@ using Biblioteca.Services;
 namespace Biblioteca;
 class Program
 {
-    static List<Libro> libros = new();
-    static List<Usuario> usuarios = new();
-    static List<Prestamo> prestamos = new();
+    static LibroService libroService = new();
+    static UsuarioService usuarioService = new();
+    static PrestamoService prestamoService = new();
 
     static void Main()
     {
