@@ -17,17 +17,22 @@ class Program
         MenuPrincipal();
     }
     static void CargarDatosPrueba()
-    {
-        var libro1 = new Libro("978-0-06-112008-4", "Cien Anos de Soledad", "Gabriel Garcia Marquez");
-        var libro2 = new Libro("978-84-376-0494-7", "El Quijote", "Miguel de Cervantes");
-        var usuario1 = new Usuario(1, "Ana Torres", "ana@email.com");
-        var usuario2 = new Usuario(2, "Luis Perez", "luis@email.com");
-        libro1.Disponible = false;
-        var prestamo1 = new Prestamo(libro1, usuario1, DateTime.Now.AddDays(-10));
-        libros.AddRange(new[] { libro1, libro2 });
-        usuarios.AddRange(new[] { usuario1, usuario2 });
-        prestamos.Add(prestamo1);
-    }
+{
+    var libro1 = new Libro("978-0-06-112008-4", "Cien Anos de Soledad", "Gabriel Garcia Marquez");
+    var libro2 = new Libro("978-84-376-0494-7", "El Quijote", "Miguel de Cervantes");
+    var usuario1 = new Usuario(1, "Ana Torres", "ana@email.com");
+    var usuario2 = new Usuario(2, "Luis Perez", "luis@email.com");
+
+    libro1.Disponible = false;
+    var prestamo1 = new Prestamo(libro1, usuario1, DateTime.Now.AddDays(-10));
+
+    // Ahora usamos el servicio para agregar
+    libroService.Agregar(libro1);
+    libroService.Agregar(libro2);
+    usuarioService.Agregar(usuario1);
+    usuarioService.Agregar(usuario2);
+    prestamoService.RegistrarPrestamo(prestamo1);
+}
 
     static void MenuPrincipal()
         {
@@ -71,32 +76,46 @@ static void MenuLibros()
             Console.WriteLine("1. Agregar\n2. Listar\n3. Buscar ISBN\n0. Volver");
             Console.Write("\nOpcion: ");
             switch (Console.ReadLine())
-            {
-                case "1":
-                    Console.Write("ISBN: "); string isbn = Console.ReadLine() ?? "";
-                    Console.Write("Titulo: "); string titulo = Console.ReadLine() ?? "";
-                    Console.Write("Autor: "); string autor = Console.ReadLine() ?? "";
-                    libros.Add(new Libro(isbn, titulo, autor));
-                    Ok("Libro agregado.");
-                    break;
-                case "2":
-                    Console.Clear();
-                    if (libros.Count == 0) { Ok("No hay libros."); break; }
-                    foreach (var l in libros)
-                    {
-                        Console.WriteLine(l.DetalleCompleto());
-                        Console.WriteLine($"  Disponible: {(l.Disponible ? "SI" : "NO")}\n");
-                    }
-                    Ok("");
-                    break;
-                case "3":
-                    Console.Write("ISBN: "); string buscar = Console.ReadLine() ?? "";
-                    var lib = libros.Find(l => l.Isbn == buscar);
-                    Ok(lib != null ? lib.DetalleCompleto() : "No encontrado.");
-                    break;
-                case "0": volver = true; break;
-                default: Error(); break;
-            }
+{
+    case "1":
+        Console.Write("ISBN: "); string isbn = Console.ReadLine() ?? "";
+        Console.Write("Titulo: "); string titulo = Console.ReadLine() ?? "";
+        Console.Write("Autor: "); string autor = Console.ReadLine() ?? "";
+        // USAS EL SERVICIO
+        libroService.Agregar(new Libro(isbn, titulo, autor));
+        Ok("Libro agregado.");
+        break;
+
+    case "2":
+        Console.Clear();
+        var todos = libroService.ObtenerTodos(); // Pides la lista al servicio
+        if (todos.Count == 0) { Ok("No hay libros."); break; }
+        foreach (var l in todos)
+        {
+            Console.WriteLine(l.DetalleCompleto());
+        }
+        // MOSTRAR KPIs (Punto 6 obligatorio)
+        Console.WriteLine($"\nTOTAL LIBROS: {libroService.TotalLibros()}");
+        Console.WriteLine($"DISPONIBLES: {libroService.LibrosDisponibles()} | PRESTADOS: {libroService.LibrosPrestados()}");
+        Ok("");
+        break;
+
+    case "3":
+        Console.Write("ISBN: "); string buscar = Console.ReadLine() ?? "";
+        // CAMBIO: Llamas al método del servicio
+        var lib = libroService.BuscarPorIsbn(buscar); 
+        Ok(lib != null ? lib.DetalleCompleto() : "No encontrado.");
+        break;
+
+    case "4":
+        // NUEVO: Punto 5 obligatorio (Ordenación)
+        libroService.OrdenarPorTitulo();
+        Ok("Libros ordenados por título satisfactoriamente.");
+        break;
+
+    case "0": volver = true; break;
+    default: Error(); break;
+}
         }
     }
 
