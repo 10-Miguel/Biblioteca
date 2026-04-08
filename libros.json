@@ -1,0 +1,26 @@
+[
+  {
+    "Isbn": "978-0-06-112008-4",
+    "Titulo": "Cien Anos de Soledad",
+    "Autor": "Gabriel Garcia Marquez",
+    "Disponible": true
+  },
+  {
+    "Isbn": "978-84-376-0494-7",
+    "Titulo": "El Quijote",
+    "Autor": "Miguel de Cervantes",
+    "Disponible": true
+  },
+  {
+    "Isbn": "3448758569233",
+    "Titulo": "angeles",
+    "Autor": "Miguel Cervantes",
+    "Disponible": false
+  },
+  {
+    "Isbn": "3453445834748",
+    "Titulo": "angeles",
+    "Autor": "Miguel",
+    "Disponible": false
+  }
+]

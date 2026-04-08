@@ -1,0 +1,36 @@
+[
+  {
+    "LibroPrestado": {
+      "Isbn": "3448758569233",
+      "Titulo": "angeles",
+      "Autor": "Miguel Cervantes",
+      "Disponible": false
+    },
+    "Prestatario": {
+      "Id": 3,
+      "Nombre": "Miguel",
+      "Email": "miguelrendonrg@gmail.com",
+      "Activo": true
+    },
+    "FechaSalida": "2026-04-07T21:56:31.3925162-05:00",
+    "FechaDevolucion": null,
+    "Estado": 0
+  },
+  {
+    "LibroPrestado": {
+      "Isbn": "3453445834748",
+      "Titulo": "angeles",
+      "Autor": "Miguel",
+      "Disponible": false
+    },
+    "Prestatario": {
+      "Id": 4,
+      "Nombre": "Cristian",
+      "Email": "cristianrendonrg@gmail.com",
+      "Activo": true
+    },
+    "FechaSalida": "2026-04-07T22:02:47.9469845-05:00",
+    "FechaDevolucion": null,
+    "Estado": 0
+  }
+]
